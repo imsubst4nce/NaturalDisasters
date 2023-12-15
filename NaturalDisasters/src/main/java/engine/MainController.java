@@ -1,3 +1,4 @@
+/*
 package engine;
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,7 +15,7 @@ import dom2app.MeasurementVector;
 
 // O main controller einai ypefthynos gia tin ylopoihsh twn use cases
 public class MainController implements IMainController{
-
+*/
 	/**
 	 * Takes a structured text file as input and converts its contents to a List<MeasurementVector>  
 	 * 
@@ -25,7 +26,7 @@ public class MainController implements IMainController{
 	 * @throws IOException if sth goes wrong during the reading of the input file
 	 * @see dom2app.IMeasurementVector
 	 */
-	public List<IMeasurementVector> load(String fileName, String delimiter) throws FileNotFoundException, IOException{
+/*	public List<IMeasurementVector> load(String fileName, String delimiter) throws FileNotFoundException, IOException{
 		BufferedReader reader; 
 		MeasurementVector row; 
 		ArrayList<IMeasurementVector> rowList = new ArrayList<IMeasurementVector>();
@@ -47,7 +48,7 @@ public class MainController implements IMainController{
 		}
 		
 		return rowList;
-	}
+	}*/
 
 	/**
 	 * A request to the server that selects a specific country and a specific indicator 
@@ -59,10 +60,10 @@ public class MainController implements IMainController{
 	 * @throws IllegalArgumentException if any of the arguments is an empty string
 	 * @see dom2app.ISingleMeasureRequest
 	 */
-	ISingleMeasureRequest findSingleCountryIndicator(String requestName, String countryName, String indicatorString)
+	/*public ISingleMeasureRequest findSingleCountryIndicator(String requestName, String countryName, String indicatorString)
 			throws IllegalArgumentException{
 		
-	}
+	}*/
 
 	/**
 	 * A request to the server that selects a specific country and a specific indicator for a time range
@@ -78,10 +79,10 @@ public class MainController implements IMainController{
 	 * @throws IllegalArgumentException if any of the arguments is an empty string, or, end < start year
 	 * @see dom2app.ISingleMeasureRequest
 	 */
-	ISingleMeasureRequest findSingleCountryIndicatorYearRange(String requestName, String countryName,
+	/*public ISingleMeasureRequest findSingleCountryIndicatorYearRange(String requestName, String countryName,
 			String indicatorString, int startYear, int endYear) throws IllegalArgumentException{
 		
-	}
+	}*/
 
 	/**
 	 * A set of strings with all the request names made so far to the server
@@ -91,9 +92,9 @@ public class MainController implements IMainController{
 	 * 
 	 * @return A set of strings with all the request names made so far to the server
 	 */
-	Set<String> getAllRequestNames(){
+	/*public Set<String> getAllRequestNames(){
 		
-	}
+	}*/
 
 	/**
 	 * Asks the server to find a specific request and return it as an ISingleMeasureRequest
@@ -101,9 +102,9 @@ public class MainController implements IMainController{
 	 * @return an ISingleMeasureRequest object with the retrieved request's data; or null if the request does not exist
 	 * @see dom2app.ISingleMeasureRequest
 	 */
-	ISingleMeasureRequest getRequestByName(String requestName) {
+	/*public ISingleMeasureRequest getRequestByName(String requestName) {
 		
-	}
+	}*/
 
 	/**
 	 * Computes the regression for the data of the request and returns an updated ISingleMeasureRequest
@@ -112,9 +113,9 @@ public class MainController implements IMainController{
 	 * @return an updated ISingleMeasureRequest with regression data, if the respective request exists and has an IMeasurementVector with data; null otherwise
 	 * @see dom2app.ISingleMeasureRequest
 	 */
-	ISingleMeasureRequest getRegression(String requestName) {
+	/*public ISingleMeasureRequest getRegression(String requestName) {
 		
-	}
+	}*/
 
 	/**
 	 * Computes the descriptive stats for the data of the request and returns an updated ISingleMeasureRequest
@@ -123,9 +124,9 @@ public class MainController implements IMainController{
 	 * @return an updated ISingleMeasureRequest with descriptive stats, if the respective request exists and has an IMeasurementVector with data; null otherwise
 	 * @see dom2app.ISingleMeasureRequest
 	 */
-	ISingleMeasureRequest getDescriptiveStats(String requestName) {
+	/*public ISingleMeasureRequest getDescriptiveStats(String requestName) {
 		
-	}
+	}*/
 
 	/**
 	 * Outputs the contents of an existing request in a report file.
@@ -139,17 +140,17 @@ public class MainController implements IMainController{
 	 * @return an integer with the number of lines written; -1 if sth goes wrong
 	 * @throws IOException if sth goes wrong during the writing of the output file
 	 */
-	int reportToFile(String outputFilePath, String requestName, String reportType) throws IOException {
+	/*public int reportToFile(String outputFilePath, String requestName, String reportType) throws IOException {
 		
 	}
 	
-	void exitProgram()	{
+	public void exitProgram()	{
 		
 	}
 	
 	// main edw kaloume sinartiseis
 	public static void main(String[] args)	{
 		
-	}
-
-}
+	}*/
+/*
+}*/
