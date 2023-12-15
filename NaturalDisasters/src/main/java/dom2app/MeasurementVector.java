@@ -38,24 +38,43 @@ public class MeasurementVector implements IMeasurementVector{
 	// gia to sigkekrimeno <country, indicator>
 	public ArrayList<Pair<Integer, Integer>> getMeasurements() {
 		ArrayList<Pair<Integer,Integer>> mCountryIndicator = new ArrayList<Pair<Integer,Integer>>();
-		Pair<Integer,Integer> yearNumberOfEvents = new Pair<Integer,Integer>(Integer.parseInt(this.splited_vector[5]),Integer.parseInt(this.splited_vector[6]));
+		int year = 1980; // first year
 		
-		for(int i = 7; i < this.splited_vector.length-1; i++)	{
-			yearNumberOfEvents = new Pair<Integer,Integer>(Integer.parseInt(splited_vector[i]), Integer.parseInt(splited_vector[i+1]));
+		Pair<Integer,Integer> yearNumberOfEvents = new Pair<Integer,Integer>(year,Integer.parseInt(this.splited_vector[5]));
+		mCountryIndicator.add(yearNumberOfEvents);
+		year += 1; // increase year by one
+		
+		for(int i = 6; i < this.splited_vector.length; i++)	{
+			yearNumberOfEvents = new Pair<Integer,Integer>(year,Integer.parseInt(splited_vector[i]));
 			mCountryIndicator.add(yearNumberOfEvents);
+			year += 1;
 		}
 		
 		return mCountryIndicator;
 	}
 	
-	// to-do
+	// edw kanoume olous tous ypologismous twn vasikwn
+	// statistikwn
+	public ArrayList<Integer> calculateDescriptiveStats()	{
+		ArrayList<Integer> list = new ArrayList<Integer>();
+		
+		return list; 
+	}
+	
+	// metatrepw ta stats se String kai to epistrefw
 	public String getDescriptiveStatsAsString() {
 		String stats = "";
 		
 		return stats;
 	}
+	// edw ypologizoume to regression
+	public ArrayList<Double> calculateRegression()	{
+		ArrayList<Double> list = new ArrayList<Double>();
+		
+		return list;
+	}
 	
-	// to-do
+	// metatrepw to apotelesma tou regression se String kai to epistrefw
 	public String getRegressionResultAsString() {
 		String regressionResult = "";
 		
