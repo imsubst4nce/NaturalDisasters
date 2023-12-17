@@ -25,7 +25,7 @@ public class SimpleUsageApacheMath {
 			regression.addData(year, value);
 		}
 
-		long count = stats.getN();
+		/*long count = stats.getN();
 		double minD = stats.getMin();
 		double gMean = stats.getGeometricMean();
 		double mean = stats.getMean();
@@ -33,14 +33,16 @@ public class SimpleUsageApacheMath {
 		double maxD = stats.getMax();
 		double kurtosis = stats.getKurtosis();
 		double stdev = stats.getStandardDeviation();
-		double sumD = stats.getSum();
+		double sumD = stats.getSum();*/
 
-		System.out.println("Descriptive Stats\n------------------------");
+		/*System.out.println("Descriptive Stats\n------------------------");
 		System.out.println("Count:\t" + count + "\nMin:\t" + minD +
 				"\nMedian:\t" + medianD +
 				"\nMax:\t" + maxD);
-		System.out.printf("Mean:\t%.2f", mean);
+		System.out.printf("Mean:\t%.2f", mean);*/
 		//the rest can be done similarly
+		
+		System.out.println(stats.toString());
 		
 		double intercept = regression.getIntercept();
 		double slope = regression.getSlope();
