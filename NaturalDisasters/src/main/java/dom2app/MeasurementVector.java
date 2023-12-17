@@ -1,10 +1,13 @@
 package dom2app;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.math3.util.*;
-
 import app.examples.SimpleUsageApacheMath;
-
 import org.apache.commons.math3.*;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
@@ -16,31 +19,41 @@ import org.apache.commons.math3.stat.regression.SimpleRegression;
 */
 public class MeasurementVector implements IMeasurementVector{
 	private String[] split_vector; // h grammh xwrismenh me vash ton delimiter
-	private ArrayList<Pair<Integer,Integer>> mCountryIndicator;
-	private DescriptiveStatistics stats;
+	private ArrayList<Pair<Integer,Integer>> mCountryIndicator = null;
+	private DescriptiveStatistics stats = null;
 	private long countYearsWithEvents = 0; // years having at least 1 event helpful for the stats
-	private SimpleRegression regression;
+	private SimpleRegression regression = null;
 	
 	// Constructor
 	public MeasurementVector(String vector, String delimiter)	{
 		this.split_vector = splitVector(vector, delimiter);
+		this.split_vector = fillNullValues(this.split_vector);
 	}
-
-	// Edw spaw to string me vash ton delimiter
-	public String[] splitVector(String vector, String delimiter)	{
-		String[] split_row = vector.split(delimiter);
+	
+	// voithitiki methodos pou gemizei ta kena me midenika
+	public String[] fillNullValues(String[] split_vector)	{
+		for(int i = 0; i < split_vector.length; i++) {
+			if(split_vector[i] == "")	{
+				split_vector[i] = "0";
+			}
+		}
 		
-		return split_row;
+		return split_vector;
+	}
+	
+	// spaw to string me vash ton delimiter kai gemizoume ta null pedia me midenika
+	public String[] splitVector(String vector, String delimiter)	{
+		return vector.split(delimiter,-1); // limit -1 gia na to kanei gia ola ta stoixeia
 	}
 	
 	// getter gia to onoma ths xwras
 	public String getCountryName() {
-		return split_vector[1];
+		return this.split_vector[1];
 	}
 	
 	// getter gia ton typo ths katastrofis
 	public String getIndicatorString() {
-		return split_vector[4];
+		return this.split_vector[4];
 	}
 	
 	// epistrefei ena arraylist me pairs apo <year, number of events>
@@ -68,20 +81,12 @@ public class MeasurementVector implements IMeasurementVector{
 	// statistikwn
 	public void calculateDescriptiveStats()	{
 		DescriptiveStatistics stats = new DescriptiveStatistics();
-
+		
 		// gather all the data needed
 		for(Pair<Integer, Integer> p:this.mCountryIndicator)	{
-			int value = 0;
-			
-			if(p.getValue() == null)	{
-				value = 0;
-			} else if(p.getValue() == 0)	{
-				value = p.getValue();
-			} else if(p.getValue() > 0)	{
-				value = p.getValue();
+			stats.addValue(p.getValue());
+			if(p.getValue() > 0)
 				this.countYearsWithEvents++;
-			}
-			stats.addValue(value);
 		}
 		
 		this.stats = stats;
@@ -89,8 +94,8 @@ public class MeasurementVector implements IMeasurementVector{
 	
 	// metatrepw ta stats se String kai to epistrefw
 	public String getDescriptiveStatsAsString() {
-		String statsString = "Descriptive Statistics/n"
-				+ "----------------------/n";
+		String statsString = "Descriptive Statistics\n" 
+				+ "----------------------\n";
 		
 		statsString += "\nTotal measurements: " + this.stats.getN();
 		statsString += "\nMaximum events: " + this.stats.getMax();
@@ -143,4 +148,62 @@ public class MeasurementVector implements IMeasurementVector{
 		
 		return regressionString;	
 	}
+	
+	// just a simple print statement for our measurementvector
+	public void printMeasurementVector()	{
+		for(String e:this.split_vector)	{
+			System.out.print(e+" | ");
+		}
+		System.out.println();
+	}
+	
+	/**********************************\
+	|**********************************|
+	\**********************************/
+	// simple test for our class
+	public static void main(String[] args)	{
+		String line = null;
+		String delimiter = "\t";
+		
+		MeasurementVector row;
+		// load input measurementvector
+		try (BufferedReader reader = new BufferedReader(new FileReader("src/main/resources/InputData/ClimateRelatedDisasters.tsv"))){
+			line = reader.readLine();
+			line = reader.readLine();
+			line = reader.readLine();
+			line = reader.readLine();
+			line = reader.readLine();
+			line = reader.readLine();
+			line = reader.readLine();
+			line = reader.readLine();
+			line = reader.readLine();
+			line = reader.readLine();
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+		
+		row = new MeasurementVector(line, delimiter);
+		
+		System.out.println(row.getCountryName());
+		System.out.println(row.getIndicatorString());
+		System.out.println();
+		
+		row.printMeasurementVector();
+		System.out.println();
+		
+		ArrayList<Pair<Integer,Integer>> row_measurements = row.getMeasurements();
+		for(Pair<Integer,Integer> p:row_measurements) {
+			System.out.println(p);
+		}
+		System.out.println();
+		
+		row.calculateDescriptiveStats();
+		System.out.println(row.getDescriptiveStatsAsString());
+		System.out.println();
+		
+		row.calculateRegression();
+		System.out.println(row.getRegressionResultAsString());
+		
+	}
+
 }

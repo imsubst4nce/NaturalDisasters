@@ -26,27 +26,21 @@ public class MainController implements IMainController{
 	 * @see dom2app.IMeasurementVector
 	 */
 	public List<IMeasurementVector> load(String fileName, String delimiter) throws FileNotFoundException, IOException{
-		BufferedReader reader; 
-		MeasurementVector row; 
 		ArrayList<IMeasurementVector> rowList = new ArrayList<IMeasurementVector>();
 		
-		try {
-			reader = new BufferedReader(new FileReader(fileName));
+		try (BufferedReader reader = new BufferedReader(new FileReader(fileName))){
+			String line = null; 
 			
-			String line = reader.readLine();
-			row = new MeasurementVector(line, delimiter);
-			rowList.add(row);
-			
-			while(line != null) {
+			while((line = reader.readLine()) != null) {
 				line = reader.readLine();
-				row = new MeasurementVector(line, delimiter);
+				MeasurementVector row = new MeasurementVector(line, delimiter);
 				rowList.add(row);
 			}
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
 		
-		return rowList;
+		return rowList; // rowlist[0] einai oi titloi twn keliwn
 	}
 
 	/*
