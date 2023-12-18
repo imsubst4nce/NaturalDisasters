@@ -36,18 +36,22 @@ public class MeasurementVector implements IMeasurementVector{
 	
 	// voithitiki methodos pou gemizei ta kena me midenika
 	public String[] fillNullValues(String[] split_vector)	{
-		for(int i = 0; i < split_vector.length; i++) {
-			if(split_vector[i] == "")	{
-				split_vector[i] = "0";
+		if(split_vector != null)	{
+			for(int i = 0; i < split_vector.length; i++) {
+				if(split_vector[i] == "")	{
+					split_vector[i] = "0";
+				}
 			}
+			return split_vector;
 		}
-		
-		return split_vector;
+		return null; // split_vector is null
 	}
 	
 	// spaw to string me vash ton delimiter kai gemizoume ta null pedia me midenika
 	public String[] splitVector(String vector, String delimiter)	{
-		return vector.split(delimiter,-1); // limit -1 gia na to kanei gia ola ta stoixeia
+		if(vector != null)
+			return vector.split(delimiter,-1); // limit -1 gia na to kanei gia ola ta stoixeia
+		return null; // vector is null
 	}
 	
 	// getter gia to onoma ths xwras
@@ -172,7 +176,6 @@ public class MeasurementVector implements IMeasurementVector{
 		MeasurementVector row;
 		// load input measurementvector
 		try (BufferedReader reader = new BufferedReader(new FileReader("src/main/resources/InputData/ClimateRelatedDisasters.tsv"))){
-			line = reader.readLine();
 			line = reader.readLine();
 			line = reader.readLine();
 			line = reader.readLine();

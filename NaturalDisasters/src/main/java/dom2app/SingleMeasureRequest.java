@@ -1,6 +1,12 @@
 package dom2app;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+
+import engine.IMainController;
+import engine.MainController;
 
 public class SingleMeasureRequest implements ISingleMeasureRequest {
 	private String requestName;
@@ -10,11 +16,11 @@ public class SingleMeasureRequest implements ISingleMeasureRequest {
 	private int requestEndYear;
 	private MeasurementVector requestResult;
 	private boolean isAnswered;
-	private ArrayList<IMeasurementVector> vectorList;
+	private List<IMeasurementVector> vectorList;
 	
 	// Constructor simple request
 	public SingleMeasureRequest(String requestName, String requestCountryName, String requestIndicator,
-			ArrayList<IMeasurementVector> vectorList)	{
+			List<IMeasurementVector> vectorList)	{
 		
 		this.requestName = requestName;
 		this.requestCountryName = requestCountryName;
@@ -25,7 +31,7 @@ public class SingleMeasureRequest implements ISingleMeasureRequest {
 	
 	// Constructor year range request
 	public SingleMeasureRequest(String requestName, String requestCountryName, String requestIndicator, int startYear, int endYear,
-			ArrayList<IMeasurementVector> vectorList)	{
+			List<IMeasurementVector> vectorList)	{
 		
 		this.requestName = requestName;
 		this.requestCountryName = requestCountryName;
@@ -43,26 +49,19 @@ public class SingleMeasureRequest implements ISingleMeasureRequest {
 	
 	// returns request's "CountryName-Indicator"
 	public String getRequestFilter()	{
-		return this.requestCountryName.concat(this.requestIndicator);
+		return this.requestCountryName.concat(" "+this.requestIndicator);
 	}
 	
 	public IMeasurementVector getAnswer()	{
-		/*for(IMeasurementVector v:vectorList) {
+		for(IMeasurementVector v:vectorList) {
 			if(v.getCountryName().equals(this.requestCountryName) && v.getIndicatorString().equals(this.requestIndicator))	{
 				isAnswered = true;
-				this.requestResult = v;
+				this.requestResult = (MeasurementVector)v;
 				return v;
 			}
 		}
 		isAnswered = false;
-		return null; // we didn't find any corresponding vectors*/
-		for(int i = 0; i < vectorList.size(); i++)	{
-			if(vectorList.get(i).getCountryName().equals(this.requestCountryName) && vectorList.get(i).getIndicatorString().equals(this.requestIndicator))	{
-				isAnswered = true;
-				this.requestResult = vectorList.get(i);
-				return this.requestResult;
-			}
-		}
+		return null; // we didn't find any corresponding vectors
 	}
 	
 	public boolean isAnsweredFlag()	{
@@ -94,11 +93,22 @@ public class SingleMeasureRequest implements ISingleMeasureRequest {
 	/**********************\
 	|**********************|
 	|**********************|
-	\**********************/
+	\
+	 * @throws IOException 
+	 * @throws FileNotFoundException **********************/
 	// for testing purposes
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+	public static void main(String[] args) throws FileNotFoundException, IOException {
+		IMainController mainController = new MainController();
+		
+		List<IMeasurementVector> vectors = mainController.load("src/main/resources/InputData/ClimateRelatedDisasters.tsv", "\t");
+		
+		ISingleMeasureRequest newReq = new SingleMeasureRequest("GR-TOT", "Greece", "Drought", vectors);
+		
+		((MeasurementVector)newReq.getAnswer()).printMeasurementVector();
+		System.out.println(newReq.isAnsweredFlag());
+		System.out.println(newReq.getDescriptiveStatsString());
+		System.out.println(newReq.getRegressionResultString());
+		
 	}
 
 }

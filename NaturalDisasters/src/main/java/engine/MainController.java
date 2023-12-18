@@ -16,8 +16,8 @@ import dom2app.SingleMeasureRequest;
 
 // O main controller einai ypefthynos gia tin ylopoihsh twn use cases
 public class MainController implements IMainController{
-	private ArrayList<IMeasurementVector> load;
-	private List<ISingleMeasureRequest> requests;
+	private List<IMeasurementVector> load;
+	private List<ISingleMeasureRequest> requests = new ArrayList<ISingleMeasureRequest>();
 	
 	/*
 	 * Takes a structured text file as input and converts its contents to a List<MeasurementVector>  
@@ -31,12 +31,11 @@ public class MainController implements IMainController{
 	 */
 	public List<IMeasurementVector> load(String fileName, String delimiter) throws FileNotFoundException, IOException{
 		ArrayList<IMeasurementVector> vectorList = new ArrayList<IMeasurementVector>();
+		String line = null;
 		
 		try (BufferedReader reader = new BufferedReader(new FileReader(fileName))){
-			String line = null; 
-			
+			reader.readLine(); // ignore 1st line that contains category names
 			while((line = reader.readLine()) != null) {
-				line = reader.readLine();
 				MeasurementVector row = new MeasurementVector(line, delimiter);
 				vectorList.add(row);
 			}
@@ -61,11 +60,10 @@ public class MainController implements IMainController{
 	 */
 	public ISingleMeasureRequest findSingleCountryIndicator(String requestName, String countryName, String indicatorString)
 			throws IllegalArgumentException{
-		
 		ISingleMeasureRequest singleMeasureRequest = new SingleMeasureRequest(requestName, countryName, indicatorString, this.load);
-		
+		singleMeasureRequest.getAnswer();
 		if(singleMeasureRequest.isAnsweredFlag() == true)	{
-			requests.add(singleMeasureRequest);
+			this.requests.add(singleMeasureRequest);
 			return singleMeasureRequest;
 		}
 		return null;
@@ -180,10 +178,31 @@ public class MainController implements IMainController{
 	 * @throws IOException if sth goes wrong during the writing of the output file
 	 */
 	public int reportToFile(String outputFilePath, String requestName, String reportType) throws IOException {
-		
+		IReportToFile report = new ReportToFile(outputFilePath, requestName, reportType);
+	}
+	
+	public List<ISingleMeasureRequest> getRequests() {
+		return this.requests;
 	}
 	
 	//public void exitProgram()	{
 		
 	//}
+	
+	public static void main(String[] args) throws FileNotFoundException, IOException	{
+		IMainController mainController = new MainController();
+		
+		List<IMeasurementVector> vectors = mainController.load("src/main/resources/InputData/ClimateRelatedDisasters.tsv", "\t");
+		
+		ISingleMeasureRequest newReq = mainController.findSingleCountryIndicator("GR-TOT", "Greece", "Drought");
+		
+		((MeasurementVector)mainController.getRequestByName("GR-TOT").getAnswer()).printMeasurementVector();
+		
+		for(ISingleMeasureRequest req: ((MainController)mainController).getRequests())	{
+			((MeasurementVector)req.getAnswer()).printMeasurementVector();
+		}
+		
+		
+	}
+	
 }

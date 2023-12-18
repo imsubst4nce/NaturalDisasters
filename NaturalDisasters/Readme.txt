@@ -20,3 +20,7 @@
 
 Notes:
 
+~Finished Classes~
+
+MeasurementVector
+SingleMeasureRequest
