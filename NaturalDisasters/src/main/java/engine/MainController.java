@@ -5,16 +5,20 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import dom2app.IMeasurementVector;
 import dom2app.ISingleMeasureRequest;
 import dom2app.MeasurementVector;
+import dom2app.SingleMeasureRequest;
 
 // O main controller einai ypefthynos gia tin ylopoihsh twn use cases
 public class MainController implements IMainController{
-
+	private ArrayList<IMeasurementVector> load;
+	private List<ISingleMeasureRequest> requests;
+	
 	/*
 	 * Takes a structured text file as input and converts its contents to a List<MeasurementVector>  
 	 * 
@@ -26,7 +30,7 @@ public class MainController implements IMainController{
 	 * @see dom2app.IMeasurementVector
 	 */
 	public List<IMeasurementVector> load(String fileName, String delimiter) throws FileNotFoundException, IOException{
-		ArrayList<IMeasurementVector> rowList = new ArrayList<IMeasurementVector>();
+		ArrayList<IMeasurementVector> vectorList = new ArrayList<IMeasurementVector>();
 		
 		try (BufferedReader reader = new BufferedReader(new FileReader(fileName))){
 			String line = null; 
@@ -34,13 +38,15 @@ public class MainController implements IMainController{
 			while((line = reader.readLine()) != null) {
 				line = reader.readLine();
 				MeasurementVector row = new MeasurementVector(line, delimiter);
-				rowList.add(row);
+				vectorList.add(row);
 			}
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
 		
-		return rowList; // rowlist[0] einai oi titloi twn keliwn
+		this.load = vectorList; // keep the loaded measurements for later use
+		
+		return vectorList; // rowlist[0] einai oi titloi twn keliwn
 	}
 
 	/*
@@ -56,6 +62,13 @@ public class MainController implements IMainController{
 	public ISingleMeasureRequest findSingleCountryIndicator(String requestName, String countryName, String indicatorString)
 			throws IllegalArgumentException{
 		
+		ISingleMeasureRequest singleMeasureRequest = new SingleMeasureRequest(requestName, countryName, indicatorString, this.load);
+		
+		if(singleMeasureRequest.isAnsweredFlag() == true)	{
+			requests.add(singleMeasureRequest);
+			return singleMeasureRequest;
+		}
+		return null;
 	}
 
 	/*
@@ -75,6 +88,10 @@ public class MainController implements IMainController{
 	public ISingleMeasureRequest findSingleCountryIndicatorYearRange(String requestName, String countryName,
 			String indicatorString, int startYear, int endYear) throws IllegalArgumentException{
 		
+		ISingleMeasureRequest singleMeasureRequestYear = new SingleMeasureRequest(requestName, countryName, indicatorString,
+				startYear, endYear, this.load);
+		
+		return singleMeasureRequestYear;
 	}
 	
 	/*
@@ -86,7 +103,13 @@ public class MainController implements IMainController{
 	 * @return A set of strings with all the request names made so far to the server
 	 */
 	public Set<String> getAllRequestNames(){
+		Set<String> requestNames = new HashSet<String>();
 		
+		for(ISingleMeasureRequest request:requests)	{
+			requestNames.add(request.getRequestName());
+		}
+		
+		return requestNames;
 	}
 
 	/*
@@ -96,7 +119,12 @@ public class MainController implements IMainController{
 	 * @see dom2app.ISingleMeasureRequest
 	 */
 	public ISingleMeasureRequest getRequestByName(String requestName) {
+		for(ISingleMeasureRequest request:requests)	{
+			if(request.getRequestName().equals(requestName))
+				return request;
+		}
 		
+		return null;
 	}
 
 	/*
@@ -107,7 +135,16 @@ public class MainController implements IMainController{
 	 * @see dom2app.ISingleMeasureRequest
 	 */
 	public ISingleMeasureRequest getRegression(String requestName) {
+		ISingleMeasureRequest existingRequest = getRequestByName(requestName);
 		
+		if(existingRequest != null)	{
+			if(existingRequest.isAnsweredFlag() == true)	{
+				existingRequest.getRegressionResultString();
+				return existingRequest;
+			}
+		}
+		
+		return null;
 	}
 
 	/*
@@ -118,7 +155,16 @@ public class MainController implements IMainController{
 	 * @see dom2app.ISingleMeasureRequest
 	 */
 	public ISingleMeasureRequest getDescriptiveStats(String requestName) {
+		ISingleMeasureRequest existingRequest = getRequestByName(requestName);
 		
+		if(existingRequest != null)	{
+			if(existingRequest.isAnsweredFlag() == true)	{
+				existingRequest.getDescriptiveStatsString();
+				return existingRequest;
+			}
+		}
+		
+		return null;
 	}
 
 	/*

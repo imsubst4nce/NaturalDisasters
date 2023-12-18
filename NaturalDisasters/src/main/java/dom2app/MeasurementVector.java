@@ -30,6 +30,10 @@ public class MeasurementVector implements IMeasurementVector{
 		this.split_vector = fillNullValues(this.split_vector);
 	}
 	
+	public MeasurementVector()	{
+		
+	}
+	
 	// voithitiki methodos pou gemizei ta kena me midenika
 	public String[] fillNullValues(String[] split_vector)	{
 		for(int i = 0; i < split_vector.length; i++) {
