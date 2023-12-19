@@ -1,14 +1,10 @@
 package dom2app;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import org.apache.commons.math3.util.*;
-import app.examples.SimpleUsageApacheMath;
-import org.apache.commons.math3.*;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 
@@ -69,25 +65,27 @@ public class MeasurementVector implements IMeasurementVector{
 	// epistrefei ena arraylist me pairs apo <year, number of events>
 	// gia to sigkekrimeno <country, indicator>
 	public ArrayList<Pair<Integer, Integer>> getMeasurements() {
-		ArrayList<Pair<Integer,Integer>> mCountryIndicator = new ArrayList<Pair<Integer,Integer>>();
+		ArrayList<Pair<Integer,Integer>> totalMeasurements = new ArrayList<Pair<Integer,Integer>>();
 		Pair<Integer,Integer> yearNumberOfEvents;
 		int year = 1980; // first year
+		if(!this.mCountryIndicator.isEmpty())
+			this.mCountryIndicator.clear();; // clear the list
 		
 		// get all measurements
 		for(int i = 5; i < this.split_vector.length; i++)	{
 			yearNumberOfEvents = new Pair<Integer,Integer>(year,Integer.parseInt(split_vector[i]));
-			mCountryIndicator.add(yearNumberOfEvents);
+			totalMeasurements.add(yearNumberOfEvents);
 			year += 1;
 		}
 		
 		// if we have a simple find without year range
 		// return the whole ArrayList
 		if(this.startingYear == 0 && this.endingYear == 0)	{
-			this.mCountryIndicator =  mCountryIndicator;
+			this.mCountryIndicator =  totalMeasurements;
 		// else we return only the ones in the year range
 		} else {
 			// case <country,indicator,year-range>
-			for(Pair<Integer,Integer> p:mCountryIndicator)	{
+			for(Pair<Integer,Integer> p:totalMeasurements)	{
 				if((p.getKey() >= this.startingYear) && (p.getKey() <= this.endingYear))	{
 					this.mCountryIndicator.add(new Pair<Integer,Integer>(p.getKey(),p.getValue()));
 				}
@@ -138,7 +136,7 @@ public class MeasurementVector implements IMeasurementVector{
 		String statsString = "Descriptive Statistics\n" 
 				+ "----------------------\n";
 		
-		statsString += "\nTotal measurements: " + this.stats.getN();
+		statsString += "Total measurements: " + this.stats.getN();
 		statsString += "\nMaximum events: " + this.stats.getMax();
 		statsString += "\nMinimum events: " + this.stats.getMin();
 		statsString += "\nMean: " + this.stats.getMean();
@@ -194,7 +192,7 @@ public class MeasurementVector implements IMeasurementVector{
 		String regressionString = "Regression\n"
 				+ "----------\n";
 		
-		regressionString += "\nSlope: " + this.regression.getSlope();
+		regressionString += "Slope: " + this.regression.getSlope();
 		regressionString += "\nIntercept: " + this.regression.getIntercept();
 		regressionString += "\nSlopeError: " + this.regression.getSlopeStdErr();
 		regressionString += "\nTendency: " + getLabel();

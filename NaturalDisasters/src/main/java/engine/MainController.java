@@ -1,21 +1,21 @@
 package engine;
 import java.io.BufferedReader;
-import java.io.File;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
+import org.apache.commons.math3.util.Pair;
 import dom2app.IMeasurementVector;
-import dom2app.IReport;
 import dom2app.ISingleMeasureRequest;
 import dom2app.MeasurementVector;
-import dom2app.ReportToHTMLFile;
-import dom2app.ReportToMarkdownFile;
-import dom2app.ReportToTextFile;
 import dom2app.SingleMeasureRequest;
 
 // O main controller einai ypefthynos gia tin ylopoihsh twn use cases
@@ -69,6 +69,7 @@ public class MainController implements IMainController{
 		if(singleMeasureRequest != null){
 			this.requests.add(singleMeasureRequest);
 		}
+		
 		return singleMeasureRequest;
 	}
 
@@ -183,38 +184,55 @@ public class MainController implements IMainController{
 	 * @throws IOException if sth goes wrong during the writing of the output file
 	 */
 	public int reportToFile(String outputFilePath, String requestName, String reportType) throws IOException {
-		IReport newReport = null;
-		int linesWritten;
+		ISingleMeasureRequest existingRequest = getRequestByName(requestName);
+		Path path = Paths.get(outputFilePath);
 		
 		if(reportType == "text")	{
-			newReport = new ReportToTextFile(outputFilePath, requestName);
+			try {
+				BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath));
+				
+				writer.write("Request name: " + "\"" + requestName + "\""+ "\n\n");
+				writer.write("<Country-Indicator>: " + "<" + existingRequest.getRequestFilter() + ">" + "\n\n");
+				
+				List<Pair<Integer,Integer>> measurements = existingRequest.getAnswer().getMeasurements();
+				
+				writer.write("Measurements" + "\n" + "------------" + "\n");
+				for(Pair<Integer,Integer> p:measurements)	{
+					writer.write("Year: " + p.getKey() + " | Events: " + p.getValue() + "\n");
+				}
+				
+				writer.write("\n"+existingRequest.getDescriptiveStatsString().toString()+"\n\n");
+				writer.write(existingRequest.getRegressionResultString().toString()+"\n\n");
+				
+				writer.close();
+				
+				return ((int)Files.lines(path).count());
+			} catch (IOException e) {
+				System.err.println("An error occured.");
+				e.printStackTrace();
+				return -1;
+			}
 		} else if(reportType == "md") {
-			newReport = new ReportToMarkdownFile(outputFilePath, requestName);
+			//newReport = new ReportToMarkdownFile(outputFilePath, requestName);
 		} else if(reportType == "html")	{
-			newReport = new ReportToHTMLFile(outputFilePath, requestName);
+			//newReport = new ReportToHTMLFile(outputFilePath, requestName);
 		}
 		
-		linesWritten = newReport.getLinesWritten();
-		
-		return linesWritten;
+		return 0;
 	}
 	
 	public List<ISingleMeasureRequest> getRequests() {
 		return this.requests;
 	}
 	
-	//public void exitProgram()	{
-		
-	//}
-	
 	public static void main(String[] args) throws FileNotFoundException, IOException	{
 		IMainController mainController = new MainController();
 		
-		List<IMeasurementVector> vectors = mainController.load("src/main/resources/InputData/ClimateRelatedDisasters.tsv", "\t");
+		mainController.load("src/main/resources/InputData/ClimateRelatedDisasters.tsv", "\t");
 		
-		ISingleMeasureRequest newReq = mainController.findSingleCountryIndicatorYearRange("GR-TOT", "Greece", "TOTAL", 2019, 2020);
+		mainController.findSingleCountryIndicatorYearRange("GR-TOT", "Greece", "TOTAL", 2015, 2020);
 		
-		//((MeasurementVector)mainController.getRequestByName("GR-TOT").getAnswer()).printMeasurementVector();
+		mainController.getRequestByName("GR-TOT").getAnswer().getMeasurements();
 		
 		for(ISingleMeasureRequest req: ((MainController)mainController).getRequests())	{
 			((MeasurementVector)req.getAnswer()).printMeasurementVector();
@@ -223,6 +241,8 @@ public class MainController implements IMainController{
 		
 		System.out.println(mainController.getDescriptiveStats("GR-TOT").getDescriptiveStatsString());
 		System.out.println(mainController.getRegression("GR-TOT").getRegressionResultString());
+		
+		System.out.println(mainController.reportToFile("C:\\Users\\nikos\\Desktop\\report.txt", "GR-TOT", "text"));
 	}
 	
 }

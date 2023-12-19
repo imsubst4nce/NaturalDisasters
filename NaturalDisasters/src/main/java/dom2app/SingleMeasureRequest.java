@@ -52,7 +52,7 @@ public class SingleMeasureRequest implements ISingleMeasureRequest {
 	
 	// returns request's "CountryName-Indicator"
 	public String getRequestFilter()	{
-		return this.requestCountryName.concat(" "+this.requestIndicator);
+		return this.requestCountryName.concat("-"+this.requestIndicator);
 	}
 	
 	public IMeasurementVector getAnswer()	{
