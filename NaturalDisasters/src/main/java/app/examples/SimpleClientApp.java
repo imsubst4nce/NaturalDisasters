@@ -26,11 +26,11 @@ public class SimpleClientApp {
 		System.out.println("Loading status: " + loadedOK);
 
 		System.out.println("\n----------- QUERY 1 -----------------\n");
-		SimpleTableModel query1 = controller.filterSingleCountryIndicator("Total-of-Australia", "Austra", "TOTAL"); 
+		SimpleTableModel query1 = controller.filterSingleCountryIndicator("Total-of-Australia", "Australia", "TOTAL"); 
 		System.out.println(query1.toString());
 		
 		System.out.println("\n----------- QUERY 2 -----------------\n");
-		SimpleTableModel query2 = controller.filterSingleCountryIndicatorYearRange("Total-of-Australia_10-18", "Austra", "TOTAL", 2010, 2018); 
+		SimpleTableModel query2 = controller.filterSingleCountryIndicatorYearRange("Total-of-Australia_10-18", "Australia", "TOTAL", 2010, 2018); 
 		System.out.println(query2.toString());
 		
 		System.out.println("\n----------- QUERY LIST -----------------\n");

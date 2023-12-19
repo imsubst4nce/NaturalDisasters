@@ -10,8 +10,12 @@ import java.util.List;
 import java.util.Set;
 
 import dom2app.IMeasurementVector;
+import dom2app.IReport;
 import dom2app.ISingleMeasureRequest;
 import dom2app.MeasurementVector;
+import dom2app.ReportToHTMLFile;
+import dom2app.ReportToMarkdownFile;
+import dom2app.ReportToTextFile;
 import dom2app.SingleMeasureRequest;
 
 // O main controller einai ypefthynos gia tin ylopoihsh twn use cases
@@ -61,12 +65,11 @@ public class MainController implements IMainController{
 	public ISingleMeasureRequest findSingleCountryIndicator(String requestName, String countryName, String indicatorString)
 			throws IllegalArgumentException{
 		ISingleMeasureRequest singleMeasureRequest = new SingleMeasureRequest(requestName, countryName, indicatorString, this.load);
-		singleMeasureRequest.getAnswer();
-		if(singleMeasureRequest.isAnsweredFlag() == true)	{
+
+		if(singleMeasureRequest != null){
 			this.requests.add(singleMeasureRequest);
-			return singleMeasureRequest;
 		}
-		return null;
+		return singleMeasureRequest;
 	}
 
 	/*
@@ -88,7 +91,9 @@ public class MainController implements IMainController{
 		
 		ISingleMeasureRequest singleMeasureRequestYear = new SingleMeasureRequest(requestName, countryName, indicatorString,
 				startYear, endYear, this.load);
-		
+		if(singleMeasureRequestYear != null){
+			this.requests.add(singleMeasureRequestYear);
+		}
 		return singleMeasureRequestYear;
 	}
 	
@@ -178,7 +183,20 @@ public class MainController implements IMainController{
 	 * @throws IOException if sth goes wrong during the writing of the output file
 	 */
 	public int reportToFile(String outputFilePath, String requestName, String reportType) throws IOException {
-		IReportToFile report = new ReportToFile(outputFilePath, requestName, reportType);
+		IReport newReport = null;
+		int linesWritten;
+		
+		if(reportType == "text")	{
+			newReport = new ReportToTextFile(outputFilePath, requestName);
+		} else if(reportType == "md") {
+			newReport = new ReportToMarkdownFile(outputFilePath, requestName);
+		} else if(reportType == "html")	{
+			newReport = new ReportToHTMLFile(outputFilePath, requestName);
+		}
+		
+		linesWritten = newReport.getLinesWritten();
+		
+		return linesWritten;
 	}
 	
 	public List<ISingleMeasureRequest> getRequests() {
@@ -194,15 +212,17 @@ public class MainController implements IMainController{
 		
 		List<IMeasurementVector> vectors = mainController.load("src/main/resources/InputData/ClimateRelatedDisasters.tsv", "\t");
 		
-		ISingleMeasureRequest newReq = mainController.findSingleCountryIndicator("GR-TOT", "Greece", "Drought");
+		ISingleMeasureRequest newReq = mainController.findSingleCountryIndicatorYearRange("GR-TOT", "Greece", "TOTAL", 2019, 2020);
 		
-		((MeasurementVector)mainController.getRequestByName("GR-TOT").getAnswer()).printMeasurementVector();
+		//((MeasurementVector)mainController.getRequestByName("GR-TOT").getAnswer()).printMeasurementVector();
 		
 		for(ISingleMeasureRequest req: ((MainController)mainController).getRequests())	{
 			((MeasurementVector)req.getAnswer()).printMeasurementVector();
+			((SingleMeasureRequest)req).printRequestMeasurements();
 		}
 		
-		
+		System.out.println(mainController.getDescriptiveStats("GR-TOT").getDescriptiveStatsString());
+		System.out.println(mainController.getRegression("GR-TOT").getRegressionResultString());
 	}
 	
 }

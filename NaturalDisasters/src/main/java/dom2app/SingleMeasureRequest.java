@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.math3.util.Pair;
+
 import engine.IMainController;
 import engine.MainController;
 
@@ -15,8 +17,9 @@ public class SingleMeasureRequest implements ISingleMeasureRequest {
 	private int requestStartYear;
 	private int requestEndYear;
 	private MeasurementVector requestResult;
-	private boolean isAnswered;
+	private boolean isAnswered = false;
 	private List<IMeasurementVector> vectorList;
+	private ArrayList<Pair<Integer,Integer>> allMeasurements = new ArrayList<Pair<Integer,Integer>>();
 	
 	// Constructor simple request
 	public SingleMeasureRequest(String requestName, String requestCountryName, String requestIndicator,
@@ -55,22 +58,31 @@ public class SingleMeasureRequest implements ISingleMeasureRequest {
 	public IMeasurementVector getAnswer()	{
 		for(IMeasurementVector v:vectorList) {
 			if(v.getCountryName().equals(this.requestCountryName) && v.getIndicatorString().equals(this.requestIndicator))	{
-				isAnswered = true;
+				this.isAnswered = true;
 				this.requestResult = (MeasurementVector)v;
-				return v;
+				
+				if((this.requestStartYear >= 1980) && (this.requestEndYear >= 1980) && (this.requestStartYear < this.requestEndYear))
+					setRequestYearRange();
+				
+				return this.requestResult;
 			}
 		}
-		isAnswered = false;
+		
 		return null; // we didn't find any corresponding vectors
 	}
 	
 	public boolean isAnsweredFlag()	{
-		return isAnswered;
+		return this.isAnswered;
 	}
 	
 	// for this class only
-	private void getRequestMeasurements()	{
-		this.requestResult.getMeasurements();
+	private void setRequestYearRange()	{	
+		this.requestResult.setYearRange(this.requestStartYear, this.requestEndYear);
+	}
+	
+	public void printRequestMeasurements()	{
+		for(Pair<Integer,Integer> p:this.allMeasurements)
+			System.out.println(p.getKey()+" | "+p.getValue());
 	}
 	
 	private void calculateRequestStats()	{
@@ -79,13 +91,11 @@ public class SingleMeasureRequest implements ISingleMeasureRequest {
 	}
 	
 	public String getDescriptiveStatsString()	{
-		getRequestMeasurements();
 		calculateRequestStats();
 		return this.requestResult.getDescriptiveStatsAsString();
 	}
 	
 	public String getRegressionResultString()	{
-		getRequestMeasurements();
 		calculateRequestStats();
 		return this.requestResult.getRegressionResultAsString();
 	}
@@ -102,13 +112,10 @@ public class SingleMeasureRequest implements ISingleMeasureRequest {
 		
 		List<IMeasurementVector> vectors = mainController.load("src/main/resources/InputData/ClimateRelatedDisasters.tsv", "\t");
 		
-		ISingleMeasureRequest newReq = new SingleMeasureRequest("GR-TOT", "Greece", "Drought", vectors);
+		ISingleMeasureRequest newReq = new SingleMeasureRequest("GR-TOT", "Greece", "Drought", 2015, 2020, vectors);
 		
 		((MeasurementVector)newReq.getAnswer()).printMeasurementVector();
-		System.out.println(newReq.isAnsweredFlag());
-		System.out.println(newReq.getDescriptiveStatsString());
-		System.out.println(newReq.getRegressionResultString());
-		
+		((SingleMeasureRequest)newReq).printRequestMeasurements();
 	}
 
 }

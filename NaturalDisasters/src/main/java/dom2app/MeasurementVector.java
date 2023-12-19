@@ -19,10 +19,12 @@ import org.apache.commons.math3.stat.regression.SimpleRegression;
 */
 public class MeasurementVector implements IMeasurementVector{
 	private String[] split_vector; // h grammh xwrismenh me vash ton delimiter
-	private ArrayList<Pair<Integer,Integer>> mCountryIndicator = null;
+	private ArrayList<Pair<Integer,Integer>> mCountryIndicator = new ArrayList<Pair<Integer,Integer>>();
 	private DescriptiveStatistics stats = null;
 	private long countYearsWithEvents = 0; // years having at least 1 event helpful for the stats
 	private SimpleRegression regression = null;
+	private int startingYear = 0;
+	private int endingYear = 0;
 	
 	// Constructor
 	public MeasurementVector(String vector, String delimiter)	{
@@ -68,25 +70,40 @@ public class MeasurementVector implements IMeasurementVector{
 	// gia to sigkekrimeno <country, indicator>
 	public ArrayList<Pair<Integer, Integer>> getMeasurements() {
 		ArrayList<Pair<Integer,Integer>> mCountryIndicator = new ArrayList<Pair<Integer,Integer>>();
+		Pair<Integer,Integer> yearNumberOfEvents;
 		int year = 1980; // first year
 		
-		Pair<Integer,Integer> yearNumberOfEvents = new Pair<Integer,Integer>(year,Integer.parseInt(this.split_vector[5]));
-		mCountryIndicator.add(yearNumberOfEvents);
-		year += 1; // increase year by one
-		
-		for(int i = 6; i < this.split_vector.length; i++)	{
+		// get all measurements
+		for(int i = 5; i < this.split_vector.length; i++)	{
 			yearNumberOfEvents = new Pair<Integer,Integer>(year,Integer.parseInt(split_vector[i]));
 			mCountryIndicator.add(yearNumberOfEvents);
 			year += 1;
 		}
 		
-		this.mCountryIndicator = mCountryIndicator; // create a field for later use
+		// if we have a simple find without year range
+		// return the whole ArrayList
+		if(this.startingYear == 0 && this.endingYear == 0)	{
+			this.mCountryIndicator =  mCountryIndicator;
+		// else we return only the ones in the year range
+		} else {
+			// case <country,indicator,year-range>
+			for(Pair<Integer,Integer> p:mCountryIndicator)	{
+				if((p.getKey() >= this.startingYear) && (p.getKey() <= this.endingYear))	{
+					this.mCountryIndicator.add(new Pair<Integer,Integer>(p.getKey(),p.getValue()));
+				}
+			}
+		}
 		
-		return mCountryIndicator;
+		return this.mCountryIndicator;
+	}
+	
+	public void setYearRange(int startingYear, int endingYear)	{
+		this.startingYear = startingYear;
+		this.endingYear = endingYear;
 	}
 	
 	// edw kanoume olous tous ypologismous twn vasikwn
-	// statistikwn
+	// statistikwn gia olo to vector
 	public void calculateDescriptiveStats()	{
 		DescriptiveStatistics stats = new DescriptiveStatistics();
 		
@@ -99,6 +116,22 @@ public class MeasurementVector implements IMeasurementVector{
 		
 		this.stats = stats;
 	}
+	
+	// edw kanoume olous tous ypologismous twn statistikwn
+	// mesa se ena year range
+	public void calculateDescriptiveStats(ArrayList<Pair<Integer, Integer>> yearRangeMeasurements)	{
+		DescriptiveStatistics stats = new DescriptiveStatistics();
+		
+		// gather all the data needed
+		for(Pair<Integer, Integer> p:yearRangeMeasurements)	{
+			stats.addValue(p.getValue());
+			if(p.getValue() > 0)
+				this.countYearsWithEvents++;
+		}
+		
+		this.stats = stats;
+	}
+	
 	
 	// metatrepw ta stats se String kai to epistrefw
 	public String getDescriptiveStatsAsString() {
@@ -119,7 +152,7 @@ public class MeasurementVector implements IMeasurementVector{
 		return statsString;
 	}
 	
-	// edw ypologizoume to regression
+	// edw ypologizoume to regression gia olo to vector
 	public void calculateRegression()	{
 		SimpleRegression regression = new SimpleRegression();
 		
@@ -129,6 +162,18 @@ public class MeasurementVector implements IMeasurementVector{
 		
 		this.regression = regression;
 	}
+	
+	// edw ypologizoume to regression gia to sigkekrimeno year-range
+	public void calculateRegression(ArrayList<Pair<Integer, Integer>> yearRangeMeasurements)	{
+		SimpleRegression regression = new SimpleRegression();
+		
+		for(Pair<Integer,Integer> p:yearRangeMeasurements) {
+			regression.addData(p.getKey(),p.getValue());
+		}
+		
+		this.regression = regression;
+	}
+	
 	
 	public String getLabel() {
         double slope = this.regression.getSlope();
@@ -198,6 +243,7 @@ public class MeasurementVector implements IMeasurementVector{
 		row.printMeasurementVector();
 		System.out.println();
 		
+		row.setYearRange(2010, 2015);
 		ArrayList<Pair<Integer,Integer>> row_measurements = row.getMeasurements();
 		for(Pair<Integer,Integer> p:row_measurements) {
 			System.out.println(p);
