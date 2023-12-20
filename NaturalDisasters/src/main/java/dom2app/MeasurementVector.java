@@ -136,16 +136,16 @@ public class MeasurementVector implements IMeasurementVector{
 		String statsString = "Descriptive Statistics\n" 
 				+ "----------------------\n";
 		
-		statsString += "Total measurements: " + this.stats.getN();
-		statsString += "\nMaximum events: " + this.stats.getMax();
-		statsString += "\nMinimum events: " + this.stats.getMin();
-		statsString += "\nMean: " + this.stats.getMean();
-		statsString += "\nGeometric Mean: " + this.stats.getGeometricMean();
-		statsString += "\nMedian: " + this.stats.getPercentile(50);
-		statsString += "\nKurtosis: " + this.stats.getKurtosis();
-		statsString += "\nStandard Deviation: " + this.stats.getStandardDeviation();
-		statsString += "\nTotal events: " + this.stats.getSum();
-		statsString += "\nYears with events: " + this.countYearsWithEvents;
+		statsString += "Total measurements: " + this.stats.getN() + "  ";
+		statsString += "\nMaximum events: " + this.stats.getMax() + "  ";
+		statsString += "\nMinimum events: " + this.stats.getMin() + "  ";
+		statsString += "\nMean: " + this.stats.getMean() + "  ";
+		statsString += "\nGeometric Mean: " + this.stats.getGeometricMean() + "  ";
+		statsString += "\nMedian: " + this.stats.getPercentile(50) + "  ";
+		statsString += "\nKurtosis: " + this.stats.getKurtosis() + "  ";
+		statsString += "\nStandard Deviation: " + this.stats.getStandardDeviation() + "  ";
+		statsString += "\nTotal events: " + this.stats.getSum() + "  ";
+		statsString += "\nYears with events: " + this.countYearsWithEvents + "  \n";
 		
 		return statsString;
 	}
@@ -192,9 +192,9 @@ public class MeasurementVector implements IMeasurementVector{
 		String regressionString = "Regression\n"
 				+ "----------\n";
 		
-		regressionString += "Slope: " + this.regression.getSlope();
-		regressionString += "\nIntercept: " + this.regression.getIntercept();
-		regressionString += "\nSlopeError: " + this.regression.getSlopeStdErr();
+		regressionString += "Slope: " + this.regression.getSlope() + "  ";
+		regressionString += "\nIntercept: " + this.regression.getIntercept()+ "  ";
+		regressionString += "\nSlopeError: " + this.regression.getSlopeStdErr()+ "  ";
 		regressionString += "\nTendency: " + getLabel();
 		
 		return regressionString;	

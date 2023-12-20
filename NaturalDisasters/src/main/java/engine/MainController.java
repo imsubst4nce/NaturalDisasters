@@ -213,12 +213,78 @@ public class MainController implements IMainController{
 				return -1;
 			}
 		} else if(reportType == "md") {
-			//newReport = new ReportToMarkdownFile(outputFilePath, requestName);
+			try {
+				BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath));
+				
+				writer.write("**Request name: " + "\"" + requestName + "\"**"+ "\n\n");
+				writer.write("_\\<Country-Indicator\\>: " + "\\<" + existingRequest.getRequestFilter() + "\\>_" + "\n\n");
+				
+				List<Pair<Integer,Integer>> measurements = existingRequest.getAnswer().getMeasurements();
+			
+				writer.write("| Year | Events |\n");
+				writer.write("|------|--------|\n");
+				
+				for(Pair<Integer,Integer> p:measurements)	{
+					writer.write("|"+p.getKey() + "|" + p.getValue() + "|\n");
+				}
+				
+				writer.write("\n"+existingRequest.getDescriptiveStatsString().toString()+"\n\n");
+				writer.write(existingRequest.getRegressionResultString().toString()+"\n\n");
+				
+				writer.close();
+				
+				return ((int)Files.lines(path).count());
+			} catch (IOException e) {
+				System.err.println("An error occured.");
+				e.printStackTrace();
+				return -1;
+			}
 		} else if(reportType == "html")	{
-			//newReport = new ReportToHTMLFile(outputFilePath, requestName);
+			try {
+				BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath));
+				
+				writer.write("<!doctype html>\n");
+				writer.write("<html>\n");
+				writer.write("<head>\n");
+				writer.write("<meta http-equiv=\"Content-Type\"content \"text\\html; charset=windows-1253\">\n");
+				writer.write("<title>Natural Disaster Data</title>");
+				writer.write("<head>\n");
+				writer.write("<body>\n");
+				
+				writer.write("<p><b>Request name: " + requestName + "</br></p>\n");
+				
+				writer.write("<p><i>Country-Indicator: " + existingRequest.getRequestFilter() + "</i></p>\n");
+				
+				List<Pair<Integer,Integer>> measurements = existingRequest.getAnswer().getMeasurements();
+				
+				writer.write("<table>\n");
+				
+				writer.write("<tr>\n");
+				writer.write("<td>Year</td> <td>Events</td>\n");
+				writer.write("</tr>\n");
+				
+				for(Pair<Integer,Integer> p:measurements)	{
+					writer.write("<tr>");
+					writer.write("<td>"+ p.getKey() + "</td> <td>" + p.getValue() + "</td>\n");
+					writer.write("</tr>");
+				}
+				
+				writer.write("</table>\n\n");
+				
+				writer.write("<p>" + existingRequest.getDescriptiveStatsString().toString() + "\n");
+				writer.write("<p>" + existingRequest.getRegressionResultString().toString() + "\n</body>\n</html>");
+				
+				writer.close();
+				
+				return ((int)Files.lines(path).count());
+			} catch (IOException e) {
+				System.err.println("An error occured.");
+				e.printStackTrace();
+				return -1;
+			}
 		}
 		
-		return 0;
+		return -1;
 	}
 	
 	public List<ISingleMeasureRequest> getRequests() {
@@ -243,6 +309,8 @@ public class MainController implements IMainController{
 		System.out.println(mainController.getRegression("GR-TOT").getRegressionResultString());
 		
 		System.out.println(mainController.reportToFile("C:\\Users\\nikos\\Desktop\\report.txt", "GR-TOT", "text"));
+		System.out.println(mainController.reportToFile("C:\\Users\\nikos\\Desktop\\report.md", "GR-TOT", "md"));
+		System.out.println(mainController.reportToFile("C:\\Users\\nikos\\Desktop\\report.html", "GR-TOT", "html"));
 	}
 	
 }
