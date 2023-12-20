@@ -1,8 +1,5 @@
 package dom2app;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.commons.math3.util.*;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -36,7 +33,7 @@ public class MeasurementVector implements IMeasurementVector{
 	public String[] fillNullValues(String[] split_vector)	{
 		if(split_vector != null)	{
 			for(int i = 0; i < split_vector.length; i++) {
-				if(split_vector[i] == "")	{
+				if(split_vector[i].equals(""))	{
 					split_vector[i] = "0";
 				}
 			}
@@ -105,6 +102,8 @@ public class MeasurementVector implements IMeasurementVector{
 	public void calculateDescriptiveStats()	{
 		DescriptiveStatistics stats = new DescriptiveStatistics();
 		
+		this.countYearsWithEvents = 0; // clear previous value
+		
 		// gather all the data needed
 		for(Pair<Integer, Integer> p:this.mCountryIndicator)	{
 			stats.addValue(p.getValue());
@@ -120,6 +119,8 @@ public class MeasurementVector implements IMeasurementVector{
 	public void calculateDescriptiveStats(ArrayList<Pair<Integer, Integer>> yearRangeMeasurements)	{
 		DescriptiveStatistics stats = new DescriptiveStatistics();
 		
+		this.countYearsWithEvents = 0; // clear previous value
+		
 		// gather all the data needed
 		for(Pair<Integer, Integer> p:yearRangeMeasurements)	{
 			stats.addValue(p.getValue());
@@ -133,8 +134,7 @@ public class MeasurementVector implements IMeasurementVector{
 	
 	// metatrepw ta stats se String kai to epistrefw
 	public String getDescriptiveStatsAsString() {
-		String statsString = "Descriptive Statistics\n" 
-				+ "----------------------\n";
+		String statsString = "Descriptive Statistics\n";
 		
 		statsString += "Total measurements: " + this.stats.getN() + "  ";
 		statsString += "\nMaximum events: " + this.stats.getMax() + "  ";
@@ -189,8 +189,7 @@ public class MeasurementVector implements IMeasurementVector{
 	
 	// metatrepw to apotelesma tou regression se String kai to epistrefw
 	public String getRegressionResultAsString() {
-		String regressionString = "Regression\n"
-				+ "----------\n";
+		String regressionString = "Regression\n";
 		
 		regressionString += "Slope: " + this.regression.getSlope() + "  ";
 		regressionString += "\nIntercept: " + this.regression.getIntercept()+ "  ";
@@ -207,54 +206,4 @@ public class MeasurementVector implements IMeasurementVector{
 		}
 		System.out.println();
 	}
-	
-	/**********************************\
-	|**********************************|
-	\**********************************/
-	// simple test for our class
-	public static void main(String[] args)	{
-		String line = null;
-		String delimiter = "\t";
-		
-		MeasurementVector row;
-		// load input measurementvector
-		try (BufferedReader reader = new BufferedReader(new FileReader("src/main/resources/InputData/ClimateRelatedDisasters.tsv"))){
-			line = reader.readLine();
-			line = reader.readLine();
-			line = reader.readLine();
-			line = reader.readLine();
-			line = reader.readLine();
-			line = reader.readLine();
-			line = reader.readLine();
-			line = reader.readLine();
-			line = reader.readLine();
-		} catch(IOException e) {
-			e.printStackTrace();
-		}
-		
-		row = new MeasurementVector(line, delimiter);
-		
-		System.out.println(row.getCountryName());
-		System.out.println(row.getIndicatorString());
-		System.out.println();
-		
-		row.printMeasurementVector();
-		System.out.println();
-		
-		row.setYearRange(2010, 2015);
-		ArrayList<Pair<Integer,Integer>> row_measurements = row.getMeasurements();
-		for(Pair<Integer,Integer> p:row_measurements) {
-			System.out.println(p);
-		}
-		System.out.println();
-		
-		row.calculateDescriptiveStats();
-		System.out.println(row.getDescriptiveStatsAsString());
-		System.out.println();
-		
-		row.calculateRegression();
-		System.out.println(row.getRegressionResultAsString());
-		
-	}
-
 }

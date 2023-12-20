@@ -99,23 +99,4 @@ public class SingleMeasureRequest implements ISingleMeasureRequest {
 		calculateRequestStats();
 		return this.requestResult.getRegressionResultAsString();
 	}
-	
-	/**********************\
-	|**********************|
-	|**********************|
-	\
-	 * @throws IOException 
-	 * @throws FileNotFoundException **********************/
-	// for testing purposes
-	public static void main(String[] args) throws FileNotFoundException, IOException {
-		IMainController mainController = new MainController();
-		
-		List<IMeasurementVector> vectors = mainController.load("src/main/resources/InputData/ClimateRelatedDisasters.tsv", "\t");
-		
-		ISingleMeasureRequest newReq = new SingleMeasureRequest("GR-TOT", "Greece", "Drought", 2015, 2020, vectors);
-		
-		((MeasurementVector)newReq.getAnswer()).printMeasurementVector();
-		((SingleMeasureRequest)newReq).printRequestMeasurements();
-	}
-
 }
