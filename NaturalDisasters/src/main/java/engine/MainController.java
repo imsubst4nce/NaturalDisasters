@@ -18,7 +18,7 @@ import dom2app.ISingleMeasureRequest;
 import dom2app.MeasurementVector;
 import dom2app.SingleMeasureRequest;
 
-// O main controller einai ypefthynos gia tin ylopoihsh twn use cases
+// Main Controller implementation - here we implement all our use cases
 public class MainController implements IMainController{
 	private List<IMeasurementVector> load;
 	private List<ISingleMeasureRequest> requests = new ArrayList<ISingleMeasureRequest>();
@@ -28,15 +28,20 @@ public class MainController implements IMainController{
 		String line = null;
 		
 		try (BufferedReader reader = new BufferedReader(new FileReader(fileName))){
-			reader.readLine(); // ignore 1st line that contains category names
+			line = reader.readLine(); // get first row
+			String[] categories = line.split(delimiter,-1);
+			int firstYear = Integer.parseInt(categories[5]); // extract first year
+			
 			while((line = reader.readLine()) != null) {
 				MeasurementVector row = new MeasurementVector(line, delimiter);
+				row.setFirstYear(firstYear);
 				vectorList.add(row);
 			}
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
 		
+		vectorList.remove(0); // removes the first row containing the categories
 		this.load = vectorList; // keep the loaded measurements for later use
 		
 		return vectorList; // rowlist[0] einai oi titloi twn keliwn
@@ -56,13 +61,19 @@ public class MainController implements IMainController{
 	public ISingleMeasureRequest findSingleCountryIndicatorYearRange(String requestName, String countryName,
 			String indicatorString, int startYear, int endYear) throws IllegalArgumentException{
 		
-		ISingleMeasureRequest singleMeasureRequestYear = new SingleMeasureRequest(requestName, countryName, indicatorString,
-				startYear, endYear, this.load);
-		if(singleMeasureRequestYear != null){
-			this.requests.add(singleMeasureRequestYear);
+		if(startYear < endYear)	{
+			ISingleMeasureRequest singleMeasureRequestYear = new SingleMeasureRequest(requestName, countryName, indicatorString,
+					startYear, endYear, this.load);
+			if(singleMeasureRequestYear != null){
+				this.requests.add(singleMeasureRequestYear);
+			}
+			
+			return singleMeasureRequestYear;
+			
+		} else {
+			System.err.println("Invalid start-end year combination!");
+			return null;
 		}
-		
-		return singleMeasureRequestYear;
 	}
 	
 	public Set<String> getAllRequestNames(){

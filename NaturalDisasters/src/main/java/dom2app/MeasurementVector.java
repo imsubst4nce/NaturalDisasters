@@ -12,21 +12,29 @@ import org.apache.commons.math3.stat.regression.SimpleRegression;
 */
 public class MeasurementVector implements IMeasurementVector{
 	private String[] split_vector; // h grammh xwrismenh me vash ton delimiter
-	private ArrayList<Pair<Integer,Integer>> mCountryIndicator = new ArrayList<Pair<Integer,Integer>>();
-	private DescriptiveStatistics stats = null;
-	private long countYearsWithEvents = 0; // years having at least 1 event helpful for the stats
-	private SimpleRegression regression = null;
-	private int startingYear = 0;
-	private int endingYear = 0;
+	private int firstYear = 0;
+	private int startingYear;
+	private int endingYear;
+	private ArrayList<Pair<Integer,Integer>> mCountryIndicator;
+	private DescriptiveStatistics stats;
+	private long countYearsWithEvents; // years having at least 1 event helpful for the stats
+	private SimpleRegression regression;
+	
 	
 	// Constructor
 	public MeasurementVector(String vector, String delimiter)	{
 		this.split_vector = splitVector(vector, delimiter);
 		this.split_vector = fillNullValues(this.split_vector);
+		this.startingYear = 0;
+		this.endingYear = 0;
+		this.mCountryIndicator = new ArrayList<Pair<Integer,Integer>>();
+		this.stats = null;
+		this.countYearsWithEvents = 0;
+		this.regression = null;
 	}
 	
-	public MeasurementVector()	{
-		
+	public void setFirstYear(int firstYear)	{
+		this.firstYear = firstYear;
 	}
 	
 	// voithitiki methodos pou gemizei ta kena me midenika
@@ -64,9 +72,10 @@ public class MeasurementVector implements IMeasurementVector{
 	public ArrayList<Pair<Integer, Integer>> getMeasurements() {
 		ArrayList<Pair<Integer,Integer>> totalMeasurements = new ArrayList<Pair<Integer,Integer>>();
 		Pair<Integer,Integer> yearNumberOfEvents;
-		int year = 1980; // first year
+		int year = this.firstYear;
+		
 		if(!this.mCountryIndicator.isEmpty())
-			this.mCountryIndicator.clear();; // clear the list
+			this.mCountryIndicator = new ArrayList<Pair<Integer,Integer>>(); // clear the list
 		
 		// get all measurements
 		for(int i = 5; i < this.split_vector.length; i++)	{
@@ -89,6 +98,9 @@ public class MeasurementVector implements IMeasurementVector{
 			}
 		}
 		
+		this.startingYear = 0; // reset startingYear
+		this.endingYear = 0; // reset endingYear
+		
 		return this.mCountryIndicator;
 	}
 	
@@ -102,7 +114,7 @@ public class MeasurementVector implements IMeasurementVector{
 	public void calculateDescriptiveStats()	{
 		DescriptiveStatistics stats = new DescriptiveStatistics();
 		
-		this.countYearsWithEvents = 0; // clear previous value
+		this.countYearsWithEvents = 0; // reset value
 		
 		// gather all the data needed
 		for(Pair<Integer, Integer> p:this.mCountryIndicator)	{
@@ -114,22 +126,7 @@ public class MeasurementVector implements IMeasurementVector{
 		this.stats = stats;
 	}
 	
-	// edw kanoume olous tous ypologismous twn statistikwn
-	// mesa se ena year range
-	public void calculateDescriptiveStats(ArrayList<Pair<Integer, Integer>> yearRangeMeasurements)	{
-		DescriptiveStatistics stats = new DescriptiveStatistics();
-		
-		this.countYearsWithEvents = 0; // clear previous value
-		
-		// gather all the data needed
-		for(Pair<Integer, Integer> p:yearRangeMeasurements)	{
-			stats.addValue(p.getValue());
-			if(p.getValue() > 0)
-				this.countYearsWithEvents++;
-		}
-		
-		this.stats = stats;
-	}
+
 	
 	
 	// metatrepw ta stats se String kai to epistrefw

@@ -1,14 +1,8 @@
 package dom2app;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.math3.util.Pair;
-
-import engine.IMainController;
-import engine.MainController;
 
 public class SingleMeasureRequest implements ISingleMeasureRequest {
 	private String requestName;

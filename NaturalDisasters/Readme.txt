@@ -1,26 +1,22 @@
 ****************************
 */------------------------\*
-*|	 ONOMATA	  |*
+*|	  ONOMATA	  |*
 *|       ---------	  |*
-*|NIKOLAOS KOUTSONIKOLIS  |*
-*|ALEXANDROS KOSTOPOULOS  |*
-*|GEORGIOS NTZELVES	  |*
+*| NIKOLAOS KOUTSONIKOLIS |*
+*| ALEXANDROS KOSTOPOULOS |*
+*| GEORGIOS NTZELVES	  |*
 *|       ---------	  |*
 *\------------------------/*
 ****************************
 */------------------------\*
 *|	    AM            |*
-*|        ---------	  |*
+*|       ---------	  |*
 *|	   5108	          |*
 *|	   4937		  |*
 *|	   5169		  |*
-*|        ---------	  |*
+*|       ---------	  |*
 *\------------------------/*
 ****************************
 
 Notes:
-
-~Finished Classes~
-
-MeasurementVector
-SingleMeasureRequest
+-
